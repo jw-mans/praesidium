@@ -1,0 +1,3 @@
+iface: "wg0"
+check_interval: 60s
+ip_check_url: "https://api.ipify.org"
