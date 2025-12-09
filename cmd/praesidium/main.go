@@ -1,27 +1,21 @@
 package main
 
 import (
-	"fmt"
 	"os"
 	"time"
 
 	"praesidium/pkg/config"
+	"praesidium/pkg/monitor"
 	"praesidium/pkg/util"
 )
 
 func main() {
-	if len(os.Args) < 2 {
-		fmt.Println("Usage: prsdm <command>")
-		fmt.Println("Commands: daemon")
-		os.Exit(1)
+	if len(os.Args) < 2 || os.Args[1] != "daemon" {
+		util.Info("Usage: praesidium daemon")
+		return
 	}
-	switch os.Args[1] {
-	case "daemon":
-		runDaemon()
-	default:
-		fmt.Printf("Unknown command: %s", os.Args[1])
-		os.Exit(1)
-	}
+
+	runDaemon()
 }
 
 func runDaemon() {
@@ -31,18 +25,19 @@ func runDaemon() {
 		os.Exit(1)
 	}
 
-	util.Info("Starting praesidium daemon . . .")
+	util.Info("Starting praesidium daemon...")
 	util.Info("Using interface: %s", cfg.Iface)
 	util.Info("Check interval: %s", cfg.CheckInterval)
 
-	// Just wait indefinitely for demo purposes
-	// Monitoring logic would go here
-
-	// It is just a placeholder to keep the daemon running
 	ticker := time.NewTicker(cfg.CheckInterval)
 	defer ticker.Stop()
 
 	for range ticker.C {
-		util.Info("Checking interface %s...", cfg.Iface)
+		status, err := monitor.CheckInterface(cfg.Iface)
+		if err != nil {
+			util.Error("VPN down: %v", err)
+		} else {
+			util.Info("VPN up: %s (%s)", status.Iface, status.VPNIP)
+		}
 	}
 }
