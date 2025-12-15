@@ -6,6 +6,7 @@ type Status struct {
 	Connected      bool
 	Iface          string
 	VPNIP          string
+	ExternalIP     string
 	RouteProtected bool
 	LastChange     time.Time
 }

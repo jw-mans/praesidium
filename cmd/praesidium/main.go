@@ -37,7 +37,18 @@ func runDaemon() {
 		if err != nil {
 			util.Error("VPN down: %v", err)
 		} else {
-			util.Info("VPN up: %s (%s)", status.Iface, status.VPNIP)
+			extIP, err := monitor.GetExternalIP(cfg.IPCheckURL)
+			if err != nil {
+				util.Error("Failed to get external IP: %v", err)
+			} else {
+				status.ExternalIP = extIP
+			}
+
+			util.Info("VPN up: %s (%s). IP: %s",
+				status.Iface,
+				status.VPNIP,
+				status.ExternalIP,
+			)
 		}
 	}
 }
