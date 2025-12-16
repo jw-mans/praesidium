@@ -1,6 +1,9 @@
 package monitor
 
-import "time"
+import (
+	"sync"
+	"time"
+)
 
 type Status struct {
 	Connected      bool
@@ -11,4 +14,35 @@ type Status struct {
 	LastChange     time.Time
 }
 
-// TODO: Add ExternalIP and Health
+type StatusStore struct {
+	mu     sync.RWMutex
+	status Status
+}
+
+func NewStatusStore(iface string) *StatusStore {
+	return &StatusStore{
+		status: Status{
+			Iface:      iface,
+			LastChange: time.Now(),
+		},
+	}
+}
+
+func (s *StatusStore) Update(newStatus Status) {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+
+	updateCond := s.status.Connected != newStatus.Connected || s.status.RouteProtected != newStatus.RouteProtected
+	if updateCond {
+		newStatus.LastChange = time.Now()
+	} else {
+		newStatus.LastChange = s.status.LastChange
+	}
+	s.status = newStatus
+}
+
+func (s *StatusStore) Get() Status {
+	s.mu.RLock()
+	defer s.mu.RUnlock()
+	return s.status
+}

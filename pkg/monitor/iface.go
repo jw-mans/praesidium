@@ -4,12 +4,9 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/vishvananda/netlink"
-)
+	"praesidium/pkg/util"
 
-const (
-	V4_FAMILY = 2
-	V6_FAMILY = 6
+	"github.com/vishvananda/netlink"
 )
 
 func CheckInterface(ifaceName string) (*Status, error) {
@@ -26,7 +23,7 @@ func CheckInterface(ifaceName string) (*Status, error) {
 
 	status.Connected = true
 
-	addrs, err := netlink.AddrList(link, V4_FAMILY)
+	addrs, err := netlink.AddrList(link, util.V4_FAMILY)
 	if err != nil || len(addrs) == 0 {
 		status.VPNIP = ""
 	} else {

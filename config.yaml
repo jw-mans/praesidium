@@ -1,3 +1,7 @@
 iface: "wg0"
 check_interval: 3s
 ip_check_url: "https://api.ipify.org"
+
+on_disconnect:
+  - log: "VPN disconnected!"
+  - run: "systemctl restart wg-quick@wg0"

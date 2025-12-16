@@ -18,7 +18,7 @@ type Config struct {
 	IPCheckURL    string        `yaml:"ip_check_url"`
 
 	Healthcheck  HealthConfig `yaml:"healthcheck"`
-	OnDisconnect ActionCfg    `yaml:"on_disconnect"`
+	OnDisconnect []ActionCfg  `yaml:"on_disconnect"`
 }
 
 // ApplyDefaults sets default values for Config fields if they are not set
